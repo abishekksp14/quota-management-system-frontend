@@ -33,7 +33,9 @@ function Register() {
         navigate('/dashboard');
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed');
+      const message = err.response?.data?.message || err.message || 'Registration failed';
+      setError(message);
+      console.error('Registration failed:', err);
     } finally {
       setLoading(false);
     }

@@ -15,6 +15,15 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Log response errors
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    console.error('API Error:', error.response || error.message);
+    return Promise.reject(error);
+  }
+);
+
 // Auth APIs
 export const register = (data) => api.post('/auth/register', data);
 export const login = (data) => api.post('/auth/login', data);
