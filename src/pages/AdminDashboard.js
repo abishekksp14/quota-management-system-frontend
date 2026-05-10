@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getAllUsers, updateUserQuota, getReports, getAllRequests, updateRequestStatus } from '../services/api';
 
@@ -14,22 +14,16 @@ function AdminDashboard() {
 
   const user = JSON.parse(localStorage.getItem('user') || '{}');
 
-  useEffect(() => {
-    fetchData();
-    // Also fetch requests count for badge
-    fetchRequestsCount();
-  }, [activeTab]);
-
-  const fetchRequestsCount = async () => {
+  const fetchRequestsCount = useCallback(async () => {
     try {
       const response = await getAllRequests();
       setRequests(response.data);
     } catch (error) {
       console.error('Error fetching requests:', error);
     }
-  };
+  }, []);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       if (activeTab === 'users') {
@@ -53,7 +47,13 @@ function AdminDashboard() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [activeTab]);
+
+  useEffect(() => {
+    fetchData();
+    // Also fetch requests count for badge
+    fetchRequestsCount();
+  }, [activeTab, fetchData, fetchRequestsCount]);
 
   const handleQuotaChange = (userId, value) => {
     setQuotaInputs({ ...quotaInputs, [userId]: value });
